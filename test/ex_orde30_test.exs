@@ -1,8 +1,17 @@
+defmodule TestMacro do
+  defmacro dtest(desc, input, expect) do
+    quote do
+      test unquote(desc) do
+        assert unquote(expect) == ExOrde30.solve(unquote(input))
+      end
+    end
+  end
+end
+
 defmodule ExOrde30Test do
   use ExUnit.Case
-  doctest ExOrde30
+  import TestMacro
 
-  test "greets the world" do
-    assert ExOrde30.hello() == :world
-  end
+  dtest("1", "abc", "abc")
+  dtest("2", "ABC", "abc")
 end
