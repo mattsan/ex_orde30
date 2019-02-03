@@ -32,6 +32,16 @@ defmodule ExOrde30 do
     |> fold()
   end
 
+  def parallel_fold(cell) when is_integer(cell), do: cell
+
+  def parallel_fold(cells) do
+    cells
+    |> Enum.map(&Task.async(fn -> fold(&1) end))
+    |> Task.yield_many(600_000)
+    |> Enum.map(fn {_, {:ok, n}} -> n end)
+    |> fold()
+  end
+
   def solve(input) do
     [lengths_s, target_s] = String.split(input, "/")
 
@@ -42,7 +52,7 @@ defmodule ExOrde30 do
     |> Enum.map(&String.to_integer/1)
     |> Enum.reverse()
     |> range(target - 1)
-    |> fold()
+    |> parallel_fold()
     |> inspect
   end
 end
